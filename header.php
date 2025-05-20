@@ -35,8 +35,8 @@
         
         <nav class="navbar">
             <ul>
-                <li><a href="index.php">Index</a></li>
-                <li><a href="about.php">About</a></li>
+                <li><a href="/index.php?page=home">Index</a></li>
+                <li><a href="/index.php?page=about">About</a></li>
             </ul>
         </nav>
     </header>
