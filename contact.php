@@ -98,12 +98,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     //echo $target_file;
-    if (file_exists($target_file)){
+    if ((file_exists($target_file)) && (!empty($_FILES["fileToUpload"]["name"]))){
         $errors['file'] = "The file already exists";
     } else {
+        /*
         if (!move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file)) {
             $errors['file'] = "Error uploading the file.";
         }
+            */
+
+        if ($_FILES["fileToUpload"]["error"] > 0) {
+            switch ($_FILES["fileToUpload"]["error"]) {
+                case UPLOAD_ERR_INI_SIZE:
+                    $errors['file'] = "The uploaded file exceeds the upload_max_filesize directive in php.ini.";
+                    break;
+                case UPLOAD_ERR_FORM_SIZE:
+                    $errors['file'] = "The uploaded file exceeds the MAX_FILE_SIZE directive in the HTML form.";
+                    break;
+                case UPLOAD_ERR_PARTIAL:
+                    $errors['file'] = "The file was only partially uploaded.";
+                    break;
+                case UPLOAD_ERR_NO_FILE:
+                    $errors['file'] = "No file was uploaded";
+                    break;
+                case UPLOAD_ERR_NO_TMP_DIR:
+                    $errors['file'] = "Missing a temporary folder";
+                    break;
+                case UPLOAD_ERR_CANT_WRITE:
+                    $errors['file'] = "Failed to write file to disk";
+                    break;
+                case UPLOAD_ERR_EXTENSION:
+                    $errors['file'] = "File upload stopped by extension";
+                    break;
+                default:
+                    $errors['file'] = "Unknown upload error";
+            }
+        } else {
+            move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file);
+        }
+
+
+
     }
 
     if (empty($errors)) {
@@ -183,8 +218,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <div>
             <label for="file">Ajouter un fichier</label>
-            <input type="file" name="fileToUpload" id="fileToUpload">
             <span style="color:red"><?= $errors['file'] ?? '' ?></span>
+            <input type="file" name="fileToUpload" id="fileToUpload">
+
         </div>
 
         <button type="submit">Envoyer</button>
