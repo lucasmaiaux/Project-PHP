@@ -58,28 +58,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     */
 
-    // Validation (Filter Input
-    if (!filter_has_var(INPUT_POST, "gender") && $data['gender'] !== "") {
+    // Validation (Filter Input)
+    if (!filter_has_var(INPUT_POST, "gender") || empty($data['gender'])) {
         $errors['gender'] = "Veuillez choisir une civilité valide.";
     }
 
-    if (!filter_has_var(INPUT_POST, "name")) {
+    if (!filter_has_var(INPUT_POST, "name") || empty($data['name'])) {
         $errors['name'] = "Le nom est obligatoire.";
     }
 
-    if (!filter_has_var(INPUT_POST, "firstname")) {
+    if (!filter_has_var(INPUT_POST, "firstname") || empty($data['firstname'])) {
         $errors['firstname'] = "Le prénom est obligatoire.";
     }
 
-    if (!filter_has_var(INPUT_POST, "email")) {
-        $errors['email'] = "L'email n'est pas valide.";
+    // Remove all illegal characters from email
+    $data['email'] = filter_var($data['email'], FILTER_SANITIZE_EMAIL);
+
+
+    if (!filter_has_var(INPUT_POST, "email") || empty($data['email'])) {
+        $errors['email'] = "L'email n'est pas rentré.";
+    }
+    else if (filter_var($data['email'], FILTER_VALIDATE_EMAIL) === false) {
+        $errors['email'] = $data['email'] . " n'est pas une addresse valide";
     }
 
-    if (!filter_has_var(INPUT_POST, "reason")) {
+    if (!filter_has_var(INPUT_POST, "reason") || empty($data['reason'])) {
         $errors['reason'] = "Veuillez choisir une raison valide.";
     }
 
-    if (!filter_has_var(INPUT_POST, "message")) {
+    if (!filter_has_var(INPUT_POST, "message") || empty($data['message'])) {
         $errors['message'] = "Le message doit contenir au moins 5 caractères.";
     }
 
