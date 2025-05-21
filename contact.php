@@ -17,9 +17,9 @@ $data = $_SESSION['form_data'] ?? [
     'firstname' => '',
     'email' => '',
     'reason' => '',
-    'message' => ''
+    'message' => '',
+    'fileToUpload' => '',
 ];
-$file = "user_data.txt";
 
 // Liste des options valides pour éviter la triche
 $validGenders = ['Homme', 'Femme', 'Dinosaure', 'Hélicoptère de combat'];
@@ -90,6 +90,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors['message'] = "Le message doit contenir au moins 5 caractères.";
     }
 
+    $target_dir = "storage/";
+    $target_file = $target_dir . basename($_FILES["fileToUpload"]["name"]);
+
+    if (!is_dir($target_dir)) {
+        mkdir($target_dir, 0755, true);
+    }
+
+    //echo $target_file;
+    if (file_exists($target_file)){
+        $errors['file'] = "The file already exists";
+    } else {
+        if (!move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file)) {
+            $errors['file'] = "Error uploading the file.";
+        }
+    }
+
     if (empty($errors)) {
         $successMessage = "Formulaire envoyé avec succès !";
 
@@ -107,7 +123,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <main>
     <h1>Formulaire de contact</h1>
 
-    <form action="index.php?page=contact" method="POST">
+    <form action="index.php?page=contact" method="POST" enctype="multipart/form-data">
         <div>
             <label for="gender">Civilité</label>
             <select name="gender" id="gender-select">
@@ -164,6 +180,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <textarea placeholder="Exprimez vous" name="message"><?= $data['message'] ?></textarea>
             <span style="color:red"><?= $errors['message'] ?? '' ?></span>
         </div>
+
+        <div>
+            <label for="file">Ajouter un fichier</label>
+            <input type="file" name="fileToUpload" id="fileToUpload">
+            <span style="color:red"><?= $errors['file'] ?? '' ?></span>
+        </div>
+
         <button type="submit">Envoyer</button>
     </form>
 
