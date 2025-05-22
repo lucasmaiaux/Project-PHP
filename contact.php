@@ -8,7 +8,7 @@ $description = "Ceci est la page Contact";
 
 <?php
 session_start();
-// Initialisation des variables
+
 $errors = [];
 $successMessage = '';
 $data = $_SESSION['form_data'] ?? [
@@ -21,12 +21,11 @@ $data = $_SESSION['form_data'] ?? [
     'fileToUpload' => '',
 ];
 
-// Liste des options valides pour éviter la triche
 $validGenders = ['Homme', 'Femme', 'Dinosaure', 'Hélicoptère de combat'];
 $validReasons = ['radio_choice1', 'radio_choice2', 'radio_choice3'];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Nettoyage basique
+    
     foreach ($data as $key => $value) {
         $data[$key] = htmlspecialchars(trim($_POST[$key] ?? ''));
     }
